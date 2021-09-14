@@ -34,7 +34,7 @@ authorRouter.post("/", (req, res) => {
     if (checkEmail(req.body.email) === false) {
         res.send("Email already exist!")
     } else {
-        const newAuthor = { ...req.body, id: uniqid(), createdAt: new Date() }
+        const newAuthor = { ...req.body, id: uniqid(), createdAt: new Date(), "avatar": `https://ui-avatars.com/api/?name=${req.body.name}+${req.body.surname}` }
         console.log(newAuthor)
 
         // 2. Read students.json file content to get back an array of students
