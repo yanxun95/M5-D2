@@ -1,0 +1,42 @@
+[
+  {
+    "id": "1lvc0jlkktmvsc63",
+    "category": "ARTICLE CATEGORY",
+    "title": "TITLE",
+    "cover": "ARTICLE COVER (IMAGE LINK)",
+    "readTime": { "value": 2, "unit": "minute" },
+    "author": { "name": "AUTHOR AVATAR NAME", "avatar": "AUTHOR AVATAR LINK" },
+    "content": "HTML",
+    "comments": [
+      {
+        "id": "1lvc0k6wktn0ll92",
+        "comment": "This is new comment9",
+        "createdAt": "2021-09-16T14:14:59.029Z"
+      },
+      {
+        "id": "command1lvc060wktn0mtv3",
+        "comment": "This is new comment9",
+        "createdAt": "2021-09-16T14:15:56.846Z"
+      }
+    ],
+    "createdAt": "2021-09-16T12:00:15.770Z",
+    "postImgPath": "D:\\Strive\\M5-D2\\public\\img\\postCovers\\1lvc0jlkktmvsc63.png"
+  },
+  {
+    "id": "1lvc0lr0ktmwaftt",
+    "category": "ARTICLE CATEGORY",
+    "title": "TITLE",
+    "cover": "ARTICLE COVER (IMAGE LINK)",
+    "readTime": { "value": 2, "unit": "minute" },
+    "author": { "name": "AUTHOR AVATAR NAME", "avatar": "AUTHOR AVATAR LINK" },
+    "content": "HTML",
+    "comments": [
+      {
+        "id": "Comment1lvc0k9wktn0vo7r",
+        "comment": "This is new comment9",
+        "createdAt": "2021-09-16T14:22:49.430Z"
+      }
+    ],
+    "createdAt": "2021-09-16T12:14:20.320Z"
+  }
+]
