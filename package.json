@@ -23,7 +23,10 @@
     "nodemon": "^2.0.12"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "express-list-endpoints": "^5.0.0",
+    "express-validator": "^6.12.1",
+    "http-errors": "^1.8.0",
     "list-endpoints-express": "^1.0.1",
     "uniqid": "^5.4.0"
   }
