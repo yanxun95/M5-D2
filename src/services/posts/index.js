@@ -114,20 +114,35 @@ postsRouter.get("/:postID/comments", async (req, res, next) => {
 })
 
 postsRouter.post("/:postID/uploadCover", multer().single("postCover"), async (req, res, next) => {
+    const isProduction = process.env.NODE_ENV === "production"
     try {
-        console.log(req.file)
+        // console.log(req.file.originalname)
 
         const posts = await getPosts()
 
-        await savePostCover(`${req.params.postID}.png`, req.file.buffer)
+        const { originalname } = req.file;
+        const [name, extension] = originalname.split(".")
+        const filename = `${req.params.postID}.${extension}`
 
+        const port = isProduction ? "" : ":3001"
+        const baseURL = `${req.protocol}://${req.hostname}${port}`
+        const coverImg = `${baseURL}/public/img/postCovers/${filename}`
+
+        // await savePostCover(`${req.params.postID}.png`, req.file.buffer)
         const index = posts.findIndex(post => post.id === req.params.postID)
 
         const postToModify = posts[index]
-        const postImgPath = join(postCoversPublicFolderPath, `./${req.params.postID}.png`)
-        console.log(postImgPath)
+        // // const postImgPath = join(postCoversPublicFolderPath, `./${req.params.postID}.png`)
+        // const { originalName } = req.file.fieldname;
+        // console.log("original name", originalName)
+        // const [name, extension] = originalName.split(".")
+        // console.log("name", name)
+        // const port = isProduction ? "" : ":3001"
+        // const baseURL = `${req.protocol}://${req.hostname}${port}`
+        // console.log(baseURL)
+        // const url = `${baseURL}/pubic/img/postCovers/`
 
-        const updatedPost = { ...postToModify, postImgPath }
+        const updatedPost = { ...postToModify, coverImg }
 
         posts[index] = updatedPost
 
@@ -150,6 +165,7 @@ postsRouter.post("/:postID/comments", async (req, res, next) => {
         const newCommant = { id: "Comment" + uniqid(), ...req.body, createdAt: new Date() }
 
         postToModify.comments.push(newCommant)
+
         // postToModify = { ...postToModify, comments: [...postToModify?.comments, newCommant] }
 
         posts[index] = postToModify
