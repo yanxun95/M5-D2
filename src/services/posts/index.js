@@ -4,12 +4,20 @@ import { postsValidationMiddleware } from "./validations.js"
 import { validationResult } from "express-validator"
 import uniqid from "uniqid"
 import { join } from "path"
+import { v2 as cloudinary } from "cloudinary"
+import { CloudinaryStorage } from "multer-storage-cloudinary"
 
 
 import { getPosts, writePosts, savePostCover, postCoversPublicFolderPath } from "../../lib/fs-tools.js"
 
 const postsRouter = express.Router() // postsRouter is going to have /students as a prefix
 
+const cloudStorage = new CloudinaryStorage({
+    cloudinary,
+    params: {
+        folder: "M5-D2",
+    },
+})
 // 1.
 postsRouter.post("/", postsValidationMiddleware, async (req, res, next) => {
     const errorsList = validationResult(req)
@@ -34,6 +42,7 @@ postsRouter.post("/", postsValidationMiddleware, async (req, res, next) => {
 
 // 2.
 postsRouter.get("/", async (req, res, next) => {
+    console.log("get it")
     try {
         const posts = await getPosts()
         if (req.query && req.query.title) {
@@ -113,34 +122,50 @@ postsRouter.get("/:postID/comments", async (req, res, next) => {
     }
 })
 
-postsRouter.post("/:postID/uploadCover", multer().single("postCover"), async (req, res, next) => {
-    const isProduction = process.env.NODE_ENV === "production"
+// postsRouter.post("/:postID/uploadCover", multer().single("postCover"), async (req, res, next) => {
+//     const isProduction = process.env.NODE_ENV === "production"
+//     try {
+//         // console.log(req.file.originalname)
+
+//         const posts = await getPosts()
+
+//         const { originalname } = req.file;
+//         const [name, extension] = originalname.split(".")
+//         const filename = `${req.params.postID}.${extension}`
+
+//         const port = isProduction ? "" : ":3001"
+//         const baseURL = `${req.protocol}://${req.hostname}${port}`
+//         const coverImg = `${baseURL}/public/img/postCovers/${filename}`
+
+//         // await savePostCover(`${req.params.postID}.png`, req.file.buffer)
+//         const index = posts.findIndex(post => post.id === req.params.postID)
+
+//         const postToModify = posts[index]
+
+//         const updatedPost = { ...postToModify, coverImg }
+
+//         posts[index] = updatedPost
+
+//         writePosts(posts)
+
+//         res.send(updatedPost)
+//     } catch (error) {
+//         next(error) // If I use next here I'll send the error to the error handlers
+//     }
+
+// })
+
+postsRouter.post("/:postID/uploadCover", multer({ storage: cloudStorage }).single("postCover"), async (req, res, next) => {
     try {
-        // console.log(req.file.originalname)
+
 
         const posts = await getPosts()
 
-        const { originalname } = req.file;
-        const [name, extension] = originalname.split(".")
-        const filename = `${req.params.postID}.${extension}`
+        const coverImg = req.file.path
 
-        const port = isProduction ? "" : ":3001"
-        const baseURL = `${req.protocol}://${req.hostname}${port}`
-        const coverImg = `${baseURL}/public/img/postCovers/${filename}`
-
-        // await savePostCover(`${req.params.postID}.png`, req.file.buffer)
         const index = posts.findIndex(post => post.id === req.params.postID)
 
         const postToModify = posts[index]
-        // // const postImgPath = join(postCoversPublicFolderPath, `./${req.params.postID}.png`)
-        // const { originalName } = req.file.fieldname;
-        // console.log("original name", originalName)
-        // const [name, extension] = originalName.split(".")
-        // console.log("name", name)
-        // const port = isProduction ? "" : ":3001"
-        // const baseURL = `${req.protocol}://${req.hostname}${port}`
-        // console.log(baseURL)
-        // const url = `${baseURL}/pubic/img/postCovers/`
 
         const updatedPost = { ...postToModify, coverImg }
 
@@ -149,6 +174,7 @@ postsRouter.post("/:postID/uploadCover", multer().single("postCover"), async (re
         writePosts(posts)
 
         res.send(updatedPost)
+
     } catch (error) {
         next(error) // If I use next here I'll send the error to the error handlers
     }
