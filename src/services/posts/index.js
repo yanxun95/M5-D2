@@ -3,9 +3,11 @@ import multer from "multer"
 import { postsValidationMiddleware } from "./validations.js"
 import { validationResult } from "express-validator"
 import uniqid from "uniqid"
-import { join } from "path"
 import { v2 as cloudinary } from "cloudinary"
 import { CloudinaryStorage } from "multer-storage-cloudinary"
+import { pipeline } from "stream" // Core module
+
+import { getPDFReadableStream } from "../../lib/pdf.js"
 
 
 import { getPosts, writePosts, savePostCover, postCoversPublicFolderPath } from "../../lib/fs-tools.js"
@@ -122,39 +124,6 @@ postsRouter.get("/:postID/comments", async (req, res, next) => {
     }
 })
 
-// postsRouter.post("/:postID/uploadCover", multer().single("postCover"), async (req, res, next) => {
-//     const isProduction = process.env.NODE_ENV === "production"
-//     try {
-//         // console.log(req.file.originalname)
-
-//         const posts = await getPosts()
-
-//         const { originalname } = req.file;
-//         const [name, extension] = originalname.split(".")
-//         const filename = `${req.params.postID}.${extension}`
-
-//         const port = isProduction ? "" : ":3001"
-//         const baseURL = `${req.protocol}://${req.hostname}${port}`
-//         const coverImg = `${baseURL}/public/img/postCovers/${filename}`
-
-//         // await savePostCover(`${req.params.postID}.png`, req.file.buffer)
-//         const index = posts.findIndex(post => post.id === req.params.postID)
-
-//         const postToModify = posts[index]
-
-//         const updatedPost = { ...postToModify, coverImg }
-
-//         posts[index] = updatedPost
-
-//         writePosts(posts)
-
-//         res.send(updatedPost)
-//     } catch (error) {
-//         next(error) // If I use next here I'll send the error to the error handlers
-//     }
-
-// })
-
 postsRouter.post("/:postID/uploadCover", multer({ storage: cloudStorage }).single("postCover"), async (req, res, next) => {
     try {
 
@@ -199,6 +168,29 @@ postsRouter.post("/:postID/comments", async (req, res, next) => {
         writePosts(posts)
 
         res.send(postToModify)
+    } catch (error) {
+        next(error)
+    }
+})
+
+postsRouter.get("/:postID/downloadPdf", async (req, res, next) => {
+    try {
+        res.setHeader("Content-Disposition", `attachment; filename=example.pdf`)
+
+        const posts = await getPosts()
+        const post = posts.find(post => post.id === req.params.postID)
+        if (post) {
+            const source = getPDFReadableStream(post)
+            const destination = res
+
+            pipeline(source, destination, err => {
+                if (err) next(err)
+            })
+        } else {
+            next(createHttpError(404, `post with ID ${req.params.postID} not found!`)) // we want to trigger 404 error handler
+        }
+
+
     } catch (error) {
         next(error)
     }
