@@ -1,6 +1,7 @@
 import PdfPrinter from "pdfmake"
+import imageDataURI from "image-data-uri"
 
-export const getPDFReadableStream = data => {
+export const getPDFReadableStream = async data => {
     const fonts = {
         Roboto: {
             normal: "Helvetica",
@@ -11,9 +12,17 @@ export const getPDFReadableStream = data => {
     }
 
     const printer = new PdfPrinter(fonts)
+    const imgDataUri = await imageDataURI.encodeFromURL(data.coverImg)
+    // imageDataURI.encodeFromURL(data.coverImg)
+    //     // RETURNS image data URI :: 'data:image/png;base64,PNGDATAURI/'
+    //     .then(res => console.log(res))
 
     const docDefinition = {
         content: [
+            {
+                image: imgDataUri,
+
+            },
             {
                 text: data.title,
                 style: 'header'

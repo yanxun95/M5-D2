@@ -180,7 +180,7 @@ postsRouter.get("/:postID/downloadPdf", async (req, res, next) => {
         const posts = await getPosts()
         const post = posts.find(post => post.id === req.params.postID)
         if (post) {
-            const source = getPDFReadableStream(post)
+            const source = await getPDFReadableStream(post)
             const destination = res
 
             pipeline(source, destination, err => {
