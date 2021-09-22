@@ -17,6 +17,9 @@ const port = process.env.PORT
 // ***************** CORS ***********************
 
 const whitelist = [process.env.FE_DEV_URL, process.env.FE_PROD_URL]
+console.log(process.env.FE_DEV_URL)
+console.log(process.env.FE_PROD_URL)
+
 
 const corsOpts = {
     origin: function (origin, next) {
