@@ -18,3 +18,5 @@ export const writeAuthors = content => writeJSON(authorsJSONPath, content)
 
 export const saveAuthorPicture = (name, contentAsBuffer) => writeFile(join(authorsPublicFolderPath, name), contentAsBuffer)
 export const savePostCover = (name, contentAsBuffer) => writeFile(join(postCoversPublicFolderPath, name), contentAsBuffer)
+
+export const getAuthorReadableStream = () => fs.createReadStream(authorsJSONPath)

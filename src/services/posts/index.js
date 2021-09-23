@@ -6,6 +6,11 @@ import uniqid from "uniqid"
 import { v2 as cloudinary } from "cloudinary"
 import { CloudinaryStorage } from "multer-storage-cloudinary"
 import { pipeline } from "stream" // Core module
+import { sendEmail } from "../../lib/email.js"
+import nodemailer from "nodemailer"
+import json2csv from "json2csv"
+import { getAuthorReadableStream } from "../../lib/fs-tools.js"
+
 
 import { getPDFReadableStream } from "../../lib/pdf.js"
 
@@ -34,6 +39,10 @@ postsRouter.post("/", postsValidationMiddleware, async (req, res, next) => {
             posts.push(newPost)
 
             writePosts(posts)
+            console.log("just create a new post")
+
+            const email = "yanxun951224@gmail.com"
+            await sendEmail(email)
 
             res.status(201).send({ id: newPost.id })
         } catch (error) {
@@ -195,5 +204,34 @@ postsRouter.get("/:postID/downloadPdf", async (req, res, next) => {
         next(error)
     }
 })
+
+postsRouter.get("/:postID/downloadCSV", async (req, res, next) => {
+    try {
+        res.setHeader("Content-Disposition", `attachment; filename=example.csv`)
+
+        const source = getAuthorReadableStream()
+        const transform = new json2csv.Transform({ fields: ["id", "name", "email", "createdAt"] })
+        const destination = res
+
+        pipeline(source, transform, destination, err => {
+            if (err) next(err)
+        })
+    } catch (error) {
+        next(error)
+    }
+})
+
+postsRouter.get("/:postID/sendEmail", async (req, res, next) => {
+    try {
+        // const { email } = req.body
+
+        const email = "yanxun951224@gmail.com"
+        await sendEmail(email)
+        res.send("Email sent!")
+    } catch (error) {
+        next(error)
+    }
+})
+
 
 export default postsRouter
