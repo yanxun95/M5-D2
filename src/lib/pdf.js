@@ -1,5 +1,6 @@
 import PdfPrinter from "pdfmake"
 import imageDataURI from "image-data-uri"
+import fs from "fs-extra"
 
 export const getPDFReadableStream = async data => {
     const fonts = {
@@ -41,6 +42,7 @@ export const getPDFReadableStream = async data => {
     }
 
     const pdfReadableStream = printer.createPdfKitDocument(docDefinition, {})
+    pdfReadableStream.pipe(fs.createWriteStream(`./src/lib/${data.id}.pdf`));
     pdfReadableStream.end()
 
     return pdfReadableStream

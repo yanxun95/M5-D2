@@ -72,5 +72,17 @@
     "comments": [],
     "coverImg": "https://res.cloudinary.com/dobdsx6ge/image/upload/v1632312462/M5-D2/zzh7sxrysworulhblg2a.png",
     "createdAt": "2021-09-17T18:25:55.566Z"
+  },
+  {
+    "id": "1lvc0nuoktx0537s",
+    "category": "",
+    "title": "test email",
+    "cover": "",
+    "readTime": { "value": 2, "unit": "minute" },
+    "author": { "name": "AUTHOR AVATAR NAME", "avatar": "AUTHOR AVATAR LINK" },
+    "content": "<p>test</p>",
+    "comments": [],
+    "coverImg": "https://res.cloudinary.com/dobdsx6ge/image/upload/v1632312462/M5-D2/zzh7sxrysworulhblg2a.png",
+    "createdAt": "2021-09-23T13:59:50.919Z"
   }
 ]
