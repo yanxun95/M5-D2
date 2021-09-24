@@ -2,7 +2,7 @@ import express from "express"
 import multer from "multer"
 import uniqid from "uniqid"
 import { join } from "path"
-import createHttpError from "http-errors"
+
 
 import { getAuthors, writeAuthors, saveAuthorPicture, authorsPublicFolderPath } from "../../lib/fs-tools.js"
 
