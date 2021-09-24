@@ -6,11 +6,10 @@ import uniqid from "uniqid"
 import { v2 as cloudinary } from "cloudinary"
 import { CloudinaryStorage } from "multer-storage-cloudinary"
 import { pipeline } from "stream" // Core module
-import { sendEmail } from "../../lib/email.js"
-import nodemailer from "nodemailer"
+import { sendEmail, sendEmailPdf } from "../../lib/email.js"
 import json2csv from "json2csv"
 import { getAuthorReadableStream } from "../../lib/fs-tools.js"
-
+import createHttpError from "http-errors"
 
 import { getPDFReadableStream } from "../../lib/pdf.js"
 
@@ -41,10 +40,23 @@ postsRouter.post("/", postsValidationMiddleware, async (req, res, next) => {
             writePosts(posts)
             console.log("just create a new post")
 
-            const email = "yanxun951224@gmail.com"
-            await sendEmail(email)
+            const newPosts = await getPosts()
+            const post = await newPosts.find(post => post.id === newPost.id)
+            if (post) {
+                const source = await getPDFReadableStream(post)
+                const destination = res
 
-            res.status(201).send({ id: newPost.id })
+                pipeline(source, destination, err => {
+                    if (err) next(err)
+                })
+            } else {
+                next(createHttpError(404, `post with ID ${req.params.postID} not found!`)) // we want to trigger 404 error handler
+            }
+
+            const email = "yanxun951224@gmail.com"
+            await sendEmailPdf(email, newPost.id)
+
+            // res.status(201).send({ id: newPost.id })
         } catch (error) {
             next(error) // If I use next here I'll send the error to the error handlers
         }
@@ -53,7 +65,6 @@ postsRouter.post("/", postsValidationMiddleware, async (req, res, next) => {
 
 // 2.
 postsRouter.get("/", async (req, res, next) => {
-    console.log("get it")
     try {
         const posts = await getPosts()
         if (req.query && req.query.title) {
