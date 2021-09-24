@@ -1,7 +1,6 @@
 import express from "express"
 import listEndpoints from "express-list-endpoints"
 import cors from "cors"
-import path from "path"
 
 import postsRouter from "./services/posts/index.js"
 import authorsRouter from "./services/authors/index.js"
@@ -11,7 +10,6 @@ const server = express()
 const port = process.env.PORT
 // const publicFolderPath = path.join(__dirname, "public")
 // console.log("process", __dirname)
-
 
 
 // ***************** CORS ***********************
